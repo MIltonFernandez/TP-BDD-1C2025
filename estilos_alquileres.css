@@ -1,0 +1,221 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(120deg, #e0eafc 0%, #cfdef3 100%);
+}
+
+.container {
+    min-height: 100vh;
+    width: 100vw;
+    max-width: none;
+    margin: 0;
+    padding: 40px 0 0 0;
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.main-header {
+    width: 100vw;
+    background: #3498db;
+    box-shadow: 0 2px 8px rgba(44,62,80,0.08);
+    margin-bottom: 0;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 12px 24px;
+}
+
+.logo {
+    width: 38px;
+    height: 38px;
+    margin-right: 16px;
+}
+
+.titulo-header {
+    color: #fff;
+    font-size: 1.7rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.header-nav {
+    display: flex;
+    gap: 12px;
+}
+
+.header-btn {
+    background: #fff;
+    color: #3498db;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 18px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.header-btn:hover {
+    background: #217dbb;
+    color: #fff;
+}
+
+.publicar-btn {
+    background: #27ae60;
+    color: #fff;
+}
+
+.publicar-btn:hover {
+    background: #219150;
+    color: #fff;
+}
+
+h2 {
+    color: #2c3e50;
+    margin-bottom: 24px;
+}
+
+.busqueda-flex {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    align-items: center;
+    background: #fff;
+    padding: 16px 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(44,62,80,0.08);
+    margin-bottom: 32px;
+    max-width: 1100px;
+}
+
+.busqueda-flex select,
+.busqueda-flex input[type="number"] {
+    min-width: 150px;
+    max-width: 200px;
+    padding: 8px 12px;
+    border: 1.5px solid #3498db;
+    border-radius: 6px;
+    background: #f8fbff;
+    color: #2c3e50;
+    font-size: 16px;
+    text-align: center;
+    margin-bottom: 0;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-shadow: 0 1px 3px rgba(52,152,219,0.05);
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.busqueda-flex select:focus,
+.busqueda-flex input[type="number"]:focus {
+    border-color: #217dbb;
+    outline: none;
+    box-shadow: 0 0 0 2px #a7d8ff;
+}
+
+.busqueda-flex button {
+    padding: 10px 18px;
+    background: #3498db;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 20px;
+    cursor: pointer;
+    margin-left: 8px;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.busqueda-flex button:hover {
+    background: #217dbb;
+}
+
+.icono-buscar {
+    font-size: 22px;
+    vertical-align: middle;
+}
+
+#resultados {
+    width: 100%;
+    max-width: 700px;
+    margin-top: 32px;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    background: #f1f7fb;
+    margin-bottom: 16px;
+    padding: 18px 16px;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(52,152,219,0.07);
+    font-size: 17px;
+}
+
+.precio {
+    color: #27ae60;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.localidad {
+    color: #2980b9;
+}
+
+.provincia {
+    color: #7f8c8d;
+}
+
+
+select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1.5px solid #3498db;
+    border-radius: 6px;
+    background: #f8fbff;
+    color: #2c3e50;
+    font-size: 16px;
+    margin-bottom: 8px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-shadow: 0 1px 3px rgba(52,152,219,0.05);
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+select:focus {
+    border-color: #217dbb;
+    outline: none;
+    box-shadow: 0 0 0 2px #a7d8ff;
+}
+
+option {
+    background: #fff;
+    color: #2c3e50;
+    font-size: 16px;
+}

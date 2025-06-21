@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<header class="main-header">
+    <div class="header-content">
+        <span class="titulo-header">Buscador de Alquileres</span>
+        <nav class="header-nav">
+            <button class="header-btn">Venta</button>
+            <button class="header-btn">Alquiler</button>
+            <button class="header-btn publicar-btn">Publicar</button>
+        </nav>
+    </div>
+</header>
+<head>
+    <title>Búsqueda de Alquileres</title>
+    <link rel="stylesheet" href="estilos_alquileres.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <div class="container">
+        <h2>Encontrá propiedades en venta y alquileres</h2>
+        <form id="busquedaForm" class="busqueda-flex">
+            <select id="operation" name="operation">
+                <option value="">Tipo de operación</option>
+                <option value="Alquiler">Alquiler</option>
+                <option value="Venta">Venta</option>
+            </select>
+            <select id="property_type" name="property_type">
+                <option value="">Tipo de propiedad</option>
+                <option value="Departamento">Departamento</option>
+                <option value="Casa">Casa</option>
+                <option value="PH">PH</option>
+                <option value="Oficina">Oficina</option>
+                <!-- Agrega más tipos si tu base los tiene -->
+            </select>
+            <select id="provincia" name="provincia">
+                <option value="">Provincia</option>
+            </select>
+            <select id="localidad" name="localidad">
+                <option value="">Localidad</option>
+            </select>
+            <input type="number" id="precio_min" name="precio_min" placeholder="Precio mínimo">
+            <button type="submit" title="Buscar">
+                <span class="icono-buscar">&#128269;</span>
+            </button>
+        </form>
+        <hr>
+        <div id="resultados"></div>
+    </div>
+
+    <script>
+        // Poblar provincias al cargar la página
+        window.onload = async function() {
+            const resp = await fetch('http://127.0.0.1:8000/provincias/');
+            const provincias = await resp.json();
+            const provinciaSelect = document.getElementById('provincia');
+            provincias.forEach(p => {
+                let opt = document.createElement('option');
+                opt.value = p;
+                opt.textContent = p;
+                provinciaSelect.appendChild(opt);
+            });
+        };
+
+        // Poblar localidades cuando cambia la provincia
+        document.getElementById('provincia').onchange = async function() {
+            const provincia = this.value;
+            const localidadSelect = document.getElementById('localidad');
+            localidadSelect.innerHTML = '<option value="">Localidad</option>';
+            if(provincia) {
+                const resp = await fetch(`http://127.0.0.1:8000/localidades/?provincia=${encodeURIComponent(provincia)}`);
+                const localidades = await resp.json();
+                localidades.forEach(l => {
+                    let opt = document.createElement('option');
+                    opt.value = l;
+                    opt.textContent = l;
+                    localidadSelect.appendChild(opt);
+                });
+            }
+        };
+
+        document.getElementById('busquedaForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const operation = document.getElementById('operation').value;
+            const property_type = document.getElementById('property_type').value;
+            const provincia = document.getElementById('provincia').value;
+            const localidad = document.getElementById('localidad').value;
+            const precio_min = document.getElementById('precio_min').value;
+
+            let url = 'http://127.0.0.1:8000/alquileres/?';
+            if(operation) url += `operation=${encodeURIComponent(operation)}&`;
+            if(property_type) url += `property_type=${encodeURIComponent(property_type)}&`;
+            if(provincia) url += `provincia=${encodeURIComponent(provincia)}&`;
+            if(localidad) url += `localidad=${encodeURIComponent(localidad)}&`;
+            if(precio_min) url += `precio_min=${precio_min}&`;
+
+            try {
+                const resp = await fetch(url);
+                const data = await resp.json();
+
+                let html = "<h3>Resultados:</h3>";
+                if(data.length === 0) {
+                    html += "<p>No se encontraron resultados.</p>";
+                } else {
+                    html += "<ul>";
+                    data.forEach(item => {
+                        const titulo = item.property_title ?? "(Sin título)";
+                        const loc = item.localidad ?? "(Sin localidad)";
+                        const prov = item.provincia ?? "(Sin provincia)";
+                        const precio = item.property_price ?? "(Sin precio)";
+                        html += `<li>
+                            <b>${titulo}</b><br>
+                            <span class="localidad">${loc}</span>, <span class="provincia">${prov}</span><br>
+                            <span class="precio">$${precio}</span>
+                        </li>`;
+                    });
+                    html += "</ul>";
+                }
+                document.getElementById('resultados').innerHTML = html;
+            } catch (error) {
+                document.getElementById('resultados').innerHTML = "<p style='color:red;'>Error al consultar la API.</p>";
+            }
+        }
+    </script>
+</body>
+</html>
