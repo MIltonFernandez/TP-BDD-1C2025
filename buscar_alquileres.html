@@ -4,8 +4,8 @@
     <div class="header-content">
         <span class="titulo-header">Buscador de Alquileres</span>
         <nav class="header-nav">
-            <button class="header-btn">Venta</button>
-            <button class="header-btn">Alquiler</button>
+            <button id="btn-venta" class="header-btn">Venta</button>
+            <button id="btn-alquiler" class="header-btn">Alquiler</button>
             <button class="header-btn publicar-btn">Publicar</button>
         </nav>
     </div>
@@ -17,6 +17,27 @@
 </head>
 <body>
     <div class="container">
+        <div id="formularioPublicar" style="display: none; margin-top: 20px;">
+            <h3>Publicar Propiedad</h3>
+            <form id="formPublicar" class="busqueda-flex">
+                <input type="text" name="property_title" placeholder="Título" required><br>
+                <input type="text" name="operation" placeholder="Operación (Venta/Alquiler)" required><br>
+                <input type="text" name="property_type" placeholder="Tipo de propiedad" required><br>
+                <input type="text" name="property_price" placeholder="Precio" required><br>
+                <input type="text" name="property_currency" placeholder="Moneda (ej. USD)" required><br>
+                <input type="text" name="property_rooms" placeholder="Ambientes"><br>
+                <input type="text" name="property_bedrooms" placeholder="Dormitorios"><br>
+                <input type="text" name="property_surface_total" placeholder="Superficie total"><br>
+                <input type="text" name="property_surface_covered" placeholder="Superficie cubierta"><br>
+                <input type="text" name="place_l2" placeholder="Provincia" required><br>
+                <input type="text" name="place_l3" placeholder="Localidad" required><br>
+                <input type="text" name="latitud" placeholder="Latitud"><br>
+                <input type="text" name="longitud" placeholder="Longitud"><br>
+                <button type="submit">Enviar</button>
+            </form>
+            <div id="mensajePublicacion"></div>
+        </div>
+
         <h2>Encontrá propiedades en venta y alquileres</h2>
         <form id="busquedaForm" class="busqueda-flex">
             <select id="operation" name="operation">
@@ -60,7 +81,7 @@
                 provinciaSelect.appendChild(opt);
             });
         };
-
+        
         // Poblar localidades cuando cambia la provincia
         document.getElementById('provincia').onchange = async function() {
             const provincia = this.value;
@@ -120,6 +141,48 @@
                 document.getElementById('resultados').innerHTML = "<p style='color:red;'>Error al consultar la API.</p>";
             }
         }
+
+        document.getElementById("btn-venta").onclick = () => {
+            document.getElementById("operation").value = "Venta";
+            document.getElementById("busquedaForm").dispatchEvent(new Event("submit"));
+        };
+
+        document.getElementById("btn-alquiler").onclick = () => {
+            document.getElementById("operation").value = "Alquiler";
+            document.getElementById("busquedaForm").dispatchEvent(new Event("submit"));
+        };
+
+        document.querySelector(".publicar-btn").onclick = () => {
+            const formulario = document.getElementById("formularioPublicar");
+            if (formulario.style.display === "block") {
+                formulario.style.display = "none";
+            } else {
+                formulario.style.display = "block";
+            }
+        };
+
+        document.getElementById("formPublicar").onsubmit = async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const resp = await fetch('http://127.0.0.1:8000/alquileres/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (resp.ok) {
+                    document.getElementById("mensajePublicacion").innerHTML = "<p style='color:green;'>¡Propiedad publicada con éxito!</p>";
+                    this.reset();
+                } else {
+                    document.getElementById("mensajePublicacion").innerHTML = "<p style='color:red;'>Error al publicar.</p>";
+                }
+            } catch (err) {
+                document.getElementById("mensajePublicacion").innerHTML = "<p style='color:red;'>Error de red o del servidor.</p>";
+            }
+        };
     </script>
 </body>
 </html>

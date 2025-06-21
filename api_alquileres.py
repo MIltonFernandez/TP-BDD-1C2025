@@ -1,10 +1,30 @@
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 import sqlite3
+from pydantic import BaseModel
 import pandas as pd
 import numpy as np
+from typing import Optional
 
 app = FastAPI()
+
+
+
+class Alquiler(BaseModel):
+    latitud: float | None
+    longitud: float | None
+    place_l2: str
+    place_l3: str
+    operation: str
+    property_type: str
+    property_rooms: int | None
+    property_bedrooms: int | None
+    property_surface_total: float | None
+    property_surface_covered: float | None
+    property_price: float
+    property_currency: str
+    property_title: str
+    id_localidad: Optional[int] = None
 
 # Habilitar CORS para todos los orígenes (solo para desarrollo)
 app.add_middleware(
@@ -16,7 +36,7 @@ app.add_middleware(
 )
 
 def get_connection():
-    return sqlite3.connect("/home/milton/Desktop/Bases de datos/TP-BDD-1C2025/mi_base.sqlite")
+    return sqlite3.connect("mi_base.sqlite")
 
 @app.get("/alquileres/")
 def buscar_alquileres(
@@ -75,3 +95,48 @@ def listar_localidades(provincia: str = Query(None)):
         )
     conn.close()
     return localidades['nombre'].dropna().tolist()
+
+@app.post("/alquileres/")
+def crear_alquiler(alquiler: Alquiler):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    # Buscar id_localidad con place_l2 y place_l3
+    cursor.execute("""
+        SELECT id_localidad FROM localidades
+        WHERE nombre = ? AND provincia = ?
+        LIMIT 1
+    """, (alquiler.place_l3, alquiler.place_l2))
+    row = cursor.fetchone()
+    id_localidad = row[0] if row else None
+
+    # Insertar en alquileres usando el id_localidad encontrado o NULL si no existe
+    cursor.execute("""
+        INSERT INTO alquileres (
+            latitud, longitud, place_l2, place_l3,
+            operation, property_type, property_rooms,
+            property_bedrooms, property_surface_total,
+            property_surface_covered, property_price,
+            property_currency, property_title, id_localidad
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        alquiler.latitud,
+        alquiler.longitud,
+        alquiler.place_l2,
+        alquiler.place_l3,
+        alquiler.operation,
+        alquiler.property_type,
+        alquiler.property_rooms,
+        alquiler.property_bedrooms,
+        alquiler.property_surface_total,
+        alquiler.property_surface_covered,
+        alquiler.property_price,
+        alquiler.property_currency,
+        alquiler.property_title,
+        id_localidad
+    ))
+
+    conn.commit()
+    conn.close()
+    return {"mensaje": "Alquiler creado exitosamente"}
